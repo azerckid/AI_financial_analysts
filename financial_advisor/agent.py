@@ -1,7 +1,7 @@
 from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm
+from google.adk.models import Gemini
 
-MODEL = LiteLlm("gemini/gemini-2.5-flash-preview-09-2025")
+MODEL = Gemini(model="gemini-2.5-flash-preview-09-2025")
 
 def get_weather(city: str):
     return f"The weather in {city} is 30 degrees."
