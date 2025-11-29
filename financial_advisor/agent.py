@@ -1,3 +1,5 @@
+from google.genai import types
+from google.adk.tools import ToolContext
 from google.adk.agents import Agent
 from google.adk.models import Gemini
 from google.adk.tools.agent_tool import AgentTool
@@ -9,8 +11,43 @@ from .prompt import PROMPT
 
 MODEL = Gemini(model="gemini-2.5-flash-preview-09-2025")
 
-def save_advice_report():
-    pass
+async def save_advice_report(tool_context: ToolContext, summary: str, ticker: str):
+    state = tool_context.state
+    data_analyst_result = state.get("data_analyst_result")
+    financial_analyst_result = state.get("financial_analyst_result")
+    news_analyst_analyst_result = state.get("news_analyst_analyst_result")
+
+    report = f"""
+# Investment Advice Report for {ticker}
+
+## Summary
+{summary}
+
+## Data Analysis
+{data_analyst_result}
+
+## Financial Analysis
+{financial_analyst_result}
+
+## News Analysis
+{news_analyst_analyst_result}
+"""
+    state["report"] = report
+
+    filename = f"{ticker}_investment_advice.md"
+
+    artifact = types.Part(
+        inline_data=types.Blob(
+            mime_type="text/markdown",
+            data=report.encode("utf-8"),
+        )
+    )
+
+    await tool_context.save_artifact(filename, artifact)
+
+    return {
+        "success": True,
+    }
 
 financial_advisor = Agent(
     name="FinancialAdvisor",
